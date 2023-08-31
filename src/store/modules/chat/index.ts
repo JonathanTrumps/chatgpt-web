@@ -6,6 +6,10 @@ export const useChatStore = defineStore('chat-store', {
   state: (): Chat.ChatState => getLocalState(),
 
   getters: {
+    getEnabledNetwork(state) {
+      return state.network === true;
+    },
+
     getChatHistoryByCurrentActive(state: Chat.ChatState) {
       const index = state.history.findIndex(item => item.uuid === state.active)
       if (index !== -1)
@@ -23,6 +27,12 @@ export const useChatStore = defineStore('chat-store', {
   },
 
   actions: {
+
+    toggleNetwork() {
+      debugger;
+      this.network = !this.network;
+    },
+
     setUsingContext(context: boolean) {
       this.usingContext = context
       this.recordState()

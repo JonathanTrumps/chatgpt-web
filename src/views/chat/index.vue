@@ -1,11 +1,11 @@
 <script setup lang='ts'>
-import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import type { Ref} from 'vue'
+import { computed, onMounted, onUnmounted, ref,h } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
-import { Message } from './components'
+import { Message} from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
 import { useUsingContext } from './hooks/useUsingContext'
@@ -15,6 +15,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
+import HtmlContent from './components/HtmlContent.vue'
 
 let controller = new AbortController()
 
@@ -34,6 +35,7 @@ const { usingContext, toggleUsingContext } = useUsingContext()
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+const getEnabledNetwork = computed(() => chatStore.getEnabledNetwork)
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !!item.conversationOptions)))
 
 const prompt = ref<string>('')
@@ -110,6 +112,7 @@ async function onConversation() {
         prompt: message,
         options,
         signal: controller.signal,
+        network: !!chatStore.getEnabledNetwork,
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
           const { responseText } = xhr
@@ -240,6 +243,7 @@ async function onRegenerate(index: number) {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         prompt: message,
         options,
+        network: !!chatStore.getEnabledNetwork,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
           const xhr = event.target
@@ -386,6 +390,30 @@ function handleClear() {
   })
 }
 
+
+function handleNetWork() {
+  chatStore.toggleNetwork();
+
+}
+
+function handleGift() {
+  if (loading.value)
+    return
+  const htmlContent = '<div>\
+                  <div><b style="color:red;">网站免费但服务器昂贵,购买ai接口昂贵，站长打工入不敷出，难以为继，希望大家加大捐赠力度，只要支付宝扫码请我喝一瓶冰阔落（不捐也能用！），就能为一个人多活一个月</b></div>\
+                  <div><b style="color:black;">PS: 所有捐赠将用于维护免费站运行</b></div>\
+                  <div><b style="color:black;">PSS: 如需退款，请直接从支付宝付款账单处联系站长</b></div>\
+                  <div><b style="color:black;">永久免费用于学习和测试,无任何套路,底下输入框输入就能直接用～</b></div>\
+                  <div><b style="color:black;">禁止发布、传播任何违法、违规内容，使用本网站，视您接受并同意</b><a target="_blank" style="color:#006eff;" href="https://docs.qq.com/doc/DVFdaY1lvWHFSWU5w">《免责声明》</a></div>\
+                  <div style="display: flex;align-items: center;justify-content: center;">\
+                  <img src="/src/assets/pay.jpg" width="200" height="100" alt="pay">\
+                  </div>';
+  dialog.info({
+    showIcon:false,
+    content: () => h(HtmlContent, { htmlContent }),
+  })
+}
+
 function handleEnter(event: KeyboardEvent) {
   if (!isMobile.value) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -481,22 +509,17 @@ onUnmounted(() => {
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
               <div class="flex items-center flex-col justify-center mt-4 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="mr-2 text-3xl" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M16 16a3 3 0 1 1 0 6a3 3 0 0 1 0-6ZM6 12a4 4 0 1 1 0 8a4 4 0 0 1 0-8Zm8.5-10a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11Z" /></svg><div>
-                  <div><b style="color:red;">网站免费但服务器昂贵,购买ai接口昂贵，站长打工入不敷出，难以为继，希望大家加大捐赠力度，只要支付宝扫码捐3元（不捐也能用！），就能为一个人多活一个月</b></div>
-                  <div>PS: 所有捐赠将用于维护免费站运行</div>
-                  <div>PSS: 如需退款，请直接从支付宝付款账单处联系站长</div>
-                  <div><b>永久免费用于学习和测试,无任何套路,底下输入框输入就能直接用～</b></div>
-                  <div>禁止发布、传播任何违法、违规内容，使用本网站，视您接受并同意<a target="_blank" style="color:#006eff;" href="https://docs.qq.com/doc/DVFdaY1lvWHFSWU5w">《免责声明》</a></div>
-                  <div
-                    style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-              "
-                  >
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="mr-2 text-3xl" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M16 16a3 3 0 1 1 0 6a3 3 0 0 1 0-6ZM6 12a4 4 0 1 1 0 8a4 4 0 0 1 0-8Zm8.5-10a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11Z" /></svg> -->
+                <div>
+                  <div><b style="color:red;">网站免费但服务器昂贵,购买ai接口昂贵，站长打工人，只要支付宝扫码请我喝一瓶冰阔落（不捐也能用！），就能为一个人多活一个月</b></div>
+                  <div><b style="color:black;">PS: 所有捐赠将用于维护免费站运行</b></div>
+                  <div><b style="color:black;">PSS: 如需退款，请直接从支付宝付款账单处联系站长</b></div>
+                  <div><b style="color:black;">永久免费用于学习和测试,无任何套路,底下输入框输入就能直接用～</b></div>
+                  <div><b style="color:black;">禁止发布、传播任何违法、违规内容，使用本网站，视您接受并同意</b><a target="_blank" style="color:#006eff;" href="https://docs.qq.com/doc/DVFdaY1lvWHFSWU5w">《免责声明》</a></div>
+                  <div style="display: flex;align-items: center;justify-content: center;">
                     <img src="/src/assets/pay.jpg" width="200" height="100" alt="pay">
                   </div>
-                  <span style="display: none">https://api.binjie.fun/api/generateStream</span>
+                  <!-- <span style="display: none">https://api.binjie.fun/api/generateStream</span> -->
                 </div>
               </div>
             </div>
@@ -528,38 +551,36 @@ onUnmounted(() => {
       </div>
     </main>
     <footer :class="footerClass">
-      <div class="w-full max-w-screen-xl m-auto">
-        <div class="flex items-center justify-between space-x-2">
-          <HoverButton v-if="!isMobile" @click="handleClear">
-            <span class="text-xl text-[#4f555e] dark:text-white">
-              <SvgIcon icon="ri:delete-bin-line" />
+      <div class="flex items-center justify-between space-x-2">
+        <HoverButton tooltip="点击关闭或开启联网功能，开启后会自动从互联网获得信息来回答您，关闭联网能极大加快响应速度">
+            <span class="text-xl text-[#4f555e]" @click="handleNetWork">
+              <div style="color: #2979ff;" v-if="getEnabledNetwork"><SvgIcon icon="ri:cloud-fill" /></div>
+              <div style="color: red;" v-if="!getEnabledNetwork"><SvgIcon icon="ri:cloud-off-line" /></div>
             </span>
           </HoverButton>
-          <HoverButton v-if="!isMobile" @click="handleExport">
-            <span class="text-xl text-[#4f555e] dark:text-white">
-              <SvgIcon icon="ri:download-2-line" />
-            </span>
-          </HoverButton>
-          <HoverButton @click="toggleUsingContext">
-            <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
-              <SvgIcon icon="ri:chat-history-line" />
+          <HoverButton tooltip="捐赠">
+            <span class="text-xl text-[#4f555e]" @click="handleGift">
+              <SvgIcon icon="ri:gift-fill" color="dodgerblue"/>
             </span>
           </HoverButton>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
-                ref="inputRef"
-                v-model:value="prompt"
-                type="textarea"
-                :placeholder="placeholder"
-                :autosize="{ minRows: 1, maxRows: isMobile ? 4 : 8 }"
-                @input="handleInput"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @keypress="handleEnter"
+                v-model:value="prompt" type="textarea" :placeholder="placeholder"
+                :autosize="{ minRows: 1, maxRows: 2 }" @input="handleInput" @focus="handleFocus" @blur="handleBlur" @keypress="handleEnter"
               />
             </template>
           </NAutoComplete>
+          <HoverButton v-if="!isMobile" @click="handleExport">
+            <span class="text-xl text-[#4f555e] dark:text-white">
+              <SvgIcon icon="ri:download-2-line" />
+            </span>
+          </HoverButton>
+          <HoverButton v-if="!isMobile" @click="toggleUsingContext">
+            <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
+              <SvgIcon icon="ri:chat-history-line" />
+            </span>
+          </HoverButton>
           <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">
             <template #icon>
               <span class="dark:text-black">
@@ -567,7 +588,6 @@ onUnmounted(() => {
               </span>
             </template>
           </NButton>
-        </div>
       </div>
     </footer>
   </div>

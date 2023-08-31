@@ -9,11 +9,15 @@ export function defaultState(): Chat.ChatState {
     usingContext: true,
     history: [{ uuid, title: 'New Chat', isEdit: false }],
     chat: [{ uuid, data: [] }],
+    network: true,
   }
 }
 
 export function getLocalState(): Chat.ChatState {
   const localState = ss.get(LOCAL_NAME)
+  if (localState && localState.network === undefined) {
+    localState.network = true
+  }
   return { ...defaultState(), ...localState }
 }
 
