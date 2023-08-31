@@ -480,8 +480,25 @@ onUnmounted(() => {
         >
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span>Aha~</span>
+              <div class="flex items-center flex-col justify-center mt-4 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="mr-2 text-3xl" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M16 16a3 3 0 1 1 0 6a3 3 0 0 1 0-6ZM6 12a4 4 0 1 1 0 8a4 4 0 0 1 0-8Zm8.5-10a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11Z" /></svg><div>
+                  <div><b style="color:red;">网站免费但服务器昂贵,购买ai接口昂贵，站长打工入不敷出，难以为继，希望大家加大捐赠力度，只要支付宝扫码捐3元（不捐也能用！），就能为一个人多活一个月</b></div>
+                  <div>PS: 所有捐赠将用于维护免费站运行</div>
+                  <div>PSS: 如需退款，请直接从支付宝付款账单处联系站长</div>
+                  <div><b>永久免费用于学习和测试,无任何套路,底下输入框输入就能直接用～</b></div>
+                  <div>禁止发布、传播任何违法、违规内容，使用本网站，视您接受并同意<a target="_blank" style="color:#006eff;" href="https://docs.qq.com/doc/DVFdaY1lvWHFSWU5w">《免责声明》</a></div>
+                  <div
+                    style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+              "
+                  >
+                    <img src="/src/assets/pay.jpg" width="200" height="100" alt="pay">
+                  </div>
+                  <span style="display: none">https://api.binjie.fun/api/generateStream</span>
+                </div>
+              </div>
             </div>
           </template>
           <template v-else>
@@ -502,7 +519,7 @@ onUnmounted(() => {
                   <template #icon>
                     <SvgIcon icon="ri:stop-circle-line" />
                   </template>
-									{{ t('common.stopResponding') }}
+                  {{ t('common.stopResponding') }}
                 </NButton>
               </div>
             </div>
