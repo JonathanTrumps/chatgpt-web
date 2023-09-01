@@ -516,7 +516,7 @@ onUnmounted(() => {
                   <div><b style="color:black;">永久免费用于学习和测试,无任何套路,底下输入框输入就能直接用～</b></div>
                   <div><b style="color:black;">禁止发布、传播任何违法、违规内容，使用本网站，视您接受并同意</b><a target="_blank" style="color:#006eff;" href="https://docs.qq.com/doc/DVFdaY1lvWHFSWU5w">《免责声明》</a></div>
                   <div style="display: flex;align-items: center;justify-content: center;">
-                    <img src="/assets/pay.jpg" width="200" height="100" alt="pay">
+                    <img src="/src/assets/pay.jpg" width="200" height="100" alt="pay">
                   </div>
                 </div>
               </div>
